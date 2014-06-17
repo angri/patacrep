@@ -13,6 +13,7 @@ import sys
 
 
 def process_unbr_spaces(node):
+    #pylint: disable=line-too-long
     r"""Replace '~' and '\ ' in node by nodes that
     will be rendered as unbreakable space.
 
@@ -38,16 +39,15 @@ def simpleparse(text):
     """Parse a simple LaTeX string.
     """
     tex = TeX()
-    tex.input(text.decode('utf8'))
+    if not isinstance(text, unicode):
+        text = text.decode("utf-8")
+    tex.input(text)
     doc = tex.parse()
     return process_unbr_spaces(doc.textContent)
 
 
 class SongParser(object):
     """Analyseur syntaxique de fichiers .sg"""
-
-    def __init__(self):
-        pass
 
     @staticmethod
     def create_tex():
@@ -57,6 +57,7 @@ class SongParser(object):
         tex.ownerDocument.context.loadBaseMacros()
         sys.path.append(os.path.dirname(__file__))
         tex.ownerDocument.context.loadPackage(tex, "plastex_patchedbabel")
+        tex.ownerDocument.context.loadPackage(tex, "plastex_chord")
         tex.ownerDocument.context.loadPackage(tex, "plastex_songs")
         sys.path.pop()
         return tex

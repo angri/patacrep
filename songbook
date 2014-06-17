@@ -12,9 +12,9 @@ import os.path
 import textwrap
 import sys
 
-from songbook_core.build import SongbookBuilder, DEFAULT_STEPS
-from songbook_core import __STR_VERSION__
-from songbook_core import errors
+from patacrep.build import SongbookBuilder, DEFAULT_STEPS
+from patacrep import __STR_VERSION__
+from patacrep import errors
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +32,7 @@ class ParseStepsAction(argparse.Action):
                 (
                     getattr(namespace, self.dest)
                     + [value.strip() for value in values[0].split(',')]
-                ),
+                    ),
                 )
 
 class VerboseAction(argparse.Action):
@@ -51,7 +51,7 @@ def argument_parser(args):
                     Book to compile.
             """))
 
-    parser.add_argument('--datadir', '-d', nargs=1, type=str, action='store',
+    parser.add_argument('--datadir', '-d', nargs='+', type=str, action='append',
             help=textwrap.dedent("""\
                     Data location. Expected (not necessarily required)
                     subdirectories are 'songs', 'img', 'latex', 'templates'.
@@ -100,18 +100,31 @@ def main():
 
     basename = os.path.basename(songbook_path)[:-3]
 
-    with open(songbook_path) as songbook_file:
-        songbook = json.load(songbook_file)
+    try:
+        with open(songbook_path) as songbook_file:
+            songbook = json.load(songbook_file)
+    except Exception as error: # pylint: disable=broad-except
+        LOGGER.error(error)
+        LOGGER.error("Error while loading file '{}'.".format(songbook_path))
+        sys.exit(1)
 
-    if options.datadir is not None:
-        songbook['datadir'] = options.datadir[0]
-    elif 'datadir' in songbook.keys():
-        if not os.path.isabs(songbook['datadir']):
-            songbook['datadir'] = os.path.join(os.path.dirname(songbook_path),
-                                               songbook['datadir']
-                                               )
-    else:
-        songbook['datadir'] = os.path.dirname(songbook_path)
+    # Gathering datadirs
+    datadirs = []
+    if options.datadir:
+        # Command line options
+        datadirs += [item[0] for item in options.datadir]
+    if 'datadir' in songbook:
+        # .sg file
+        if isinstance(songbook['datadir'], basestring):
+            songbook['datadir'] = [songbook['datadir']]
+        datadirs += [
+                os.path.join(os.path.dirname(songbook_path), path)
+                for path in songbook['datadir']
+                ]
+    if not datadirs:
+        # Default value
+        datadirs = [os.path.dirname(songbook_path)]
+    songbook['datadir'] = datadirs
 
     try:
         sb_builder = SongbookBuilder(songbook, basename)
@@ -120,9 +133,10 @@ def main():
         sb_builder.build_steps(options.steps)
     except errors.SongbookError as error:
         LOGGER.error(error)
-        LOGGER.error(
-                "Running again with option '-v' may give more information."
-                )
+        if LOGGER.level >= logging.INFO:
+            LOGGER.error(
+                    "Running again with option '-v' may give more information."
+                    )
         sys.exit(1)
 
     sys.exit(0)

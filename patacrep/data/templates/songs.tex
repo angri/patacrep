@@ -18,14 +18,6 @@
 %! The latest version of this program can be obtained from
 %! https://github.com/patacrep/
 
-
-%% Automaticly generated document.
-%% You may edit this file but all changes will be overwritten.
-%% If you want to change this document, have a look at
-%% the templating system.
-%%
-%% Generated using Songbook <http://www.patacrep.com>
-
 (* variables *)
 {
 "instruments": {"description": {"english": "Instruments", "french": "Instruments"},
@@ -56,12 +48,8 @@
             "values": {"chorded": {"english": "With guitar chords", "french": "Avec accords de guitare" },
                                    "lyric": {"english": "Lyrics only", "french": "Paroles uniquement"}
                      },
-            "default": {"default":"chorded"}, 
+            "default": {"default":"chorded"},
             "mandatory": true
-            },
-"mainfontsize": {"description": {"english": "Font Size", "french": "Taille de police"},
-               "type":"font",
-               "default":{"default": "10"}
             },
 "lang": {"description": {"english": "Language", "french": "Langue"},
          "default": {"english": "english", "french": "french"}
@@ -69,47 +57,42 @@
 }
 (* endvariables *)
 
-(* block documentclass *)
-\documentclass[((mainfontsize))pt]{article}
+(* extends "layout.tex" *)
 
+(* block songbookpackages *)
 \usepackage[((booktype)),
             (* for option in bookoptions *)((option)),
             (* endfor *)
             (* for instrument in instruments *)((instrument)),
-            (* endfor *)]{crepbook}
+            (* endfor *)]{patacrep}
 (* endblock *)
 
 (* block songbookpreambule *)
-   \usepackage[utf8]{inputenc}
-   \usepackage[T1]{fontenc}
-   \usepackage{lmodern}
+   (( super() ))
 
+   (* for lang in _languages *)
+   \PassOptionsToPackage{((lang))}{babel}
+   (* endfor *)
+   \usepackage[((lang))]{babel}
    \lang{((lang))}
-(* endblock songbookpreambule *)
 
-(* block preambule *)
-(* endblock preambule *)
+   \usepackage{graphicx}
+   \graphicspath{(* for dir in datadir *)
+                 {((dir))/img/} %
+                 (* endfor *)
+                 }
 
-\begin{document}
 
-(* block title *)
-(* endblock *)
-
-(* block preface *)
-(* endblock *)
-
-(* block index *)
-(* endblock *)
-
-(* block chords *)
+   \makeatletter
+   \@ifpackageloaded{hyperref}{}{\newcommand{\phantomsection}{}}
+   \@ifpackageloaded{hyperref}{}{\newcommand{\hyperlink}[2]{#2}}
+   \makeatother
 (* endblock *)
 
 (* block songs *)
+   \phantomsection
+   \addcontentsline{toc}{section}{\songlistname}
+
+   ((render_content(content) ))
+
 (* endblock *)
-
-(* block postface *)
-(* endblock *)
-
-\end{document}
-
-%! End of file

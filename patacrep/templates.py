@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Template for .tex generation settings and utilities"""
 
-from jinja2 import Environment, FileSystemLoader, ChoiceLoader, PackageLoader, \
+from jinja2 import Environment, FileSystemLoader, ChoiceLoader, \
         TemplateNotFound, nodes
 from jinja2.ext import Extension
 from jinja2.meta import find_referenced_templates as find_templates
@@ -11,7 +11,7 @@ import os
 import re
 import json
 
-from songbook_core import errors
+from patacrep import errors
 
 _LATEX_SUBS = (
     (re.compile(r'\\'), r'\\textbackslash'),
@@ -54,7 +54,7 @@ class VariablesExtension(Extension):
                 end_tokens=['name:endvariables'],
                 drop_needle=True,
                 )
-        return nodes.Const("")
+        return nodes.Const("") # pylint: disable=no-value-for-parameter
 
 
 def _escape_tex(value):
@@ -68,25 +68,21 @@ def _escape_tex(value):
 class TexRenderer(object):
     """Render a template to a LaTeX file."""
 
-    def __init__(self, template, datadir, lang):
+    def __init__(self, template, datadirs, lang):
         '''Start a new jinja2 environment for .tex creation.
 
         Arguments:
         - template: name of the template to use.
-        - datadir: location of the data directory (which max contain
-          file <datadir>/templates/<template>).
+        - datadirs: list of locations of the data directory
+          (which may contain file <datadir>/templates/<template>).
         - lang: main language of songbook.
         '''
         self.lang = lang
+        # Load templates in filesystem ...
+        loaders = [FileSystemLoader(os.path.join(datadir, 'templates'))
+                      for datadir in datadirs]
         self.texenv = Environment(
-                loader=ChoiceLoader([
-                    FileSystemLoader(
-                        os.path.join(datadir, 'templates')
-                        ),
-                    PackageLoader(
-                        'songbook_core', os.path.join('data', 'templates')
-                        ),
-                    ]),
+                loader=ChoiceLoader(loaders),
                 extensions=[VariablesExtension],
                 )
         self.texenv.block_start_string = '(*'

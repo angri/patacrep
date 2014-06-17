@@ -19,33 +19,56 @@
 %! https://github.com/patacrep/
 
 
-(* extends "layout.tex" *)
+%% Automatically generated document.
+%% You may edit this file but all changes will be overwritten.
+%% If you want to change this document, have a look at
+%% the templating system.
+%%
+%% Generated using Songbook <http://www.patacrep.com>
+
+\makeatletter
+\def\input@path{(* for dir in datadir *)
+                 {((dir))/latex/} %
+                 (* endfor *)
+                 }
+\makeatother
+
+(* block documentclass *)
+\documentclass{article}
+(* endblock *)
+
+(* block songbookpackages *)
+(* endblock *)
 
 (* block songbookpreambule *)
-   (( super() ))
+   \usepackage[utf8]{inputenc}
+   \usepackage[T1]{fontenc}
+   \usepackage{lmodern}
+(* endblock songbookpreambule *)
 
+(* block preambule *)
+(* endblock preambule *)
 
-   (* for lang in content.languages() *)
-   \PassOptionsToPackage{((lang))}{babel}
-   (* endfor *)
-   \usepackage[((lang))]{babel}
+\begin{document}
 
-   \graphicspath{{((datadir))/img/}}
+(* block title *)
+(* endblock *)
+
+(* block preface *)
+(* endblock *)
+
+(* block index *)
+(* endblock *)
+
+(* block chords *)
 (* endblock *)
 
 (* block songs *)
-   \phantomsection
-   \addcontentsline{toc}{section}{\songlistname}
-
-   \begin{songs}{((indexes|default('')))}
-      (* for type, elem in content.content *)
-      (* if type=="song" *)
-        \input{((elem.path))}
-      (* elif type=="section" *)
-        \end{songs}
-        \songsection{((elem))}
-        \begin{songs}{((indexes|default('')))}
-      (* endif *)
-      (* endfor *)
-   \end{songs}
 (* endblock *)
+
+(* block postface *)
+(* endblock *)
+
+\end{document}
+
+%! End of file

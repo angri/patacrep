@@ -4,10 +4,12 @@
 
 $ python setup.py install
 """
-from songbook_core import __STR_VERSION__
+from patacrep import __STR_VERSION__
+
 import sys
 import os
 import site
+
 
 SETUP = {"name": 'songbook-core',
         "version": __STR_VERSION__,
@@ -15,7 +17,7 @@ SETUP = {"name": 'songbook-core',
         "author": 'The Songbook team',
         "author_email": 'crep@team-on-fire.com',
         "url": 'https://github.com/patacrep/songbook-core',
-        "packages": ['songbook_core'],
+        "packages": ['patacrep'],
         "license": "GPLv2 or any later version",
         "scripts": ['songbook'],
         "requires": [
@@ -23,7 +25,7 @@ SETUP = {"name": 'songbook-core',
             "locale", "logging", "os", "plasTeX", "re", "subprocess", "sys",
             "textwrap", "unidecode", "jinja2"
             ],
-        "package_data": {'songbook_core': ['data/latex/*',
+        "package_data": {'patacrep': [  'data/latex/*',
                                         'data/templates/*',
                                         'data/examples/*.sb',
                                         'data/examples/*/*.sg',
@@ -67,16 +69,19 @@ if sys.platform.startswith('darwin'):
 elif sys.platform.startswith('win32'):
     try:
         from cx_Freeze import setup, Executable
+        exe = Executable(script="songbook")
     except ImportError:
         # Only a source installation will be possible
         from distutils.core import setup
+        exe = None
     build_options = {'build_exe': {
-                        "include_files": ["plasTeX/"],
+                        "include_files": ["plasTeX/", "patacrep/"],
                         "excludes": ["plasTeX"],
                         "includes": ["UserList", "UserString", "new", "ConfigParser"]
                     }}
     SETUP.update({"options": build_options,
-                "executables": [Executable(script="songbook")],
+                "executables": [exe],
+                "package_data": {},
             })
 else:
     from distutils.core import setup

@@ -1,5 +1,4 @@
 {
-"template" : "layout.tex",
 "bookoptions" : [
     "importantdiagramonly",
     "repeatchords",

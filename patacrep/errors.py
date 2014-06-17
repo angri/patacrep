@@ -10,6 +10,19 @@ class SongbookError(Exception):
     """
     pass
 
+class SBFileError(SongbookError):
+    """Error during songbook file decoding"""
+
+    def __init__(self, message=None):
+        super(SBFileError, self).__init__()
+        self.message = message
+
+    def __str__(self):
+        if self.message is None:
+            return str(self.original)
+        else:
+            return self.message
+
 class TemplateError(SongbookError):
     """Error during template generation"""
 
@@ -37,7 +50,7 @@ class LatexCompilationError(SongbookError):
                 ).format(basename=self.basename)
 
 class StepCommandError(SongbookError):
-    """Error during LaTeX compilation."""
+    """Error during custom command compilation."""
 
     def __init__(self, command, code):
         super(StepCommandError, self).__init__()
