@@ -191,7 +191,8 @@ class SongbookBuilder(object):
         LOGGER.info("Building '{}.pdf'…".format(self.basename))
         self._run_once(self._set_latex)
         process = Popen(
-                ["pdflatex"] + self._pdflatex_options + [self.basename],
+                # TODO: make this configurable
+                ["xelatex"] + self._pdflatex_options + [self.basename],
                 stdin=PIPE,
                 stdout=PIPE,
                 stderr=PIPE,
